@@ -58,7 +58,7 @@
 
 <script>
 import { fetchCache } from '/src/modules/cacheData'
-import AbilityCard from '../components/AbilitiyCard.vue'
+import AbilityCard from '../components/AbilityCard.vue'
 
 export default {
     components: {
@@ -120,6 +120,12 @@ export default {
         flex-direction: column
         justify-content: center
         align-items: center
+
+.type-container
+    display: flex
+
+    .type
+        text-transform: uppercase
 
 .measurements-container
     display: flex
