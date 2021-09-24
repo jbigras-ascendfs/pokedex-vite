@@ -39,5 +39,7 @@ export default {
 
 .content
     width: calc(100% - var(--leftbar-width))
+    height: 100%
+    overflow-y: scroll
 
 </style>

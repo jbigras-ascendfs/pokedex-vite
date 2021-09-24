@@ -49,11 +49,11 @@
         <div class="measurements-container">
             <div class="measurement weight">
                 <span>Weight</span>
-                <span>{{ pokemonDetails.weight / 10 }} kg</span>
+                <span>{{ weight }} kg</span>
             </div>
             <div class="measurement height">
                 <span>Height</span>
-                <span>{{ pokemonDetails.height / 10 }} m</span>
+                <span>{{ height }} m</span>
             </div>
         </div>
 
@@ -74,6 +74,7 @@
 <script>
 import { fetchCache } from '/src/modules/cacheData'
 import AbilityCard from '../components/AbilityCard.vue'
+import anime from 'animejs/lib/anime.es.js';
 
 export default {
     components: {
@@ -86,7 +87,9 @@ export default {
             pokemonDetails: null,
             showBack: false,
             showShiny: false,
-            description: null
+            description: null,
+            weight: 0,
+            height: 0
         }
     },
     created() {
@@ -94,6 +97,8 @@ export default {
         fetchCache(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/`).then(data => {
             this.pokemonDetails = data
             this.loading = false
+
+            this.animateDimensions(this.pokemonDetails)
 
             console.log(this.pokemonDetails.abilities)
         }).catch(error => {
@@ -116,6 +121,24 @@ export default {
         },
         toggleShinySprite() {
             this.showShiny = !this.showShiny
+        },
+        animateDimensions({ weight: targetWeight, height: targetHeight }) {
+            const dimensions = {
+                weight: 0,
+                height: 0
+            }
+            anime({
+                targets: dimensions,
+                weight: targetWeight / 10,
+                height: targetHeight / 10,
+                round: 1,
+                easing: 'easeOutQuart',
+                duration: 1900,
+                update: () => {
+                    this.weight = dimensions.weight
+                    this.height = dimensions.height
+                }
+            })
         }
     }
 }
