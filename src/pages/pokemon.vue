@@ -2,7 +2,7 @@
     <h1>Pokemon Information</h1>
     <div v-if="error">Error</div>
     <div v-else-if="loading">Loading</div>
-    <div v-else class="info-wrapper">
+    <div v-else class="pokemon-info-wrapper">
 
         <div class="sprites-wrapper">
             <div v-if="!showBack && !showShiny" class="image-container front default">
@@ -18,7 +18,7 @@
                 <img :src="pokemonDetails.sprites.back_shiny" :alt="pokemonDetails.name">
             </div>
 
-            <div class="sprites-buttons">
+            <div class="sprite-controls">
                 <button @click="toggleSpriteDirection">Turn</button>
                 <button @click="toggleShinySprite">Shiny</button>
             </div>
@@ -43,13 +43,19 @@
             </div>
         </div>
 
+        <Abilities :abilities="pokemonDetails.abilities" />
+
     </div>
 </template>
 
 <script>
 import { fetchCache } from '/src/modules/cacheData'
+import Abilities from '../components/Abilities.vue'
 
 export default {
+    components: {
+        Abilities
+    },
     data() {
         return {
             loading: true,
@@ -88,9 +94,24 @@ export default {
 
 <style lang="sass" scoped>
 
-.info-wrapper
+.pokemon-info-wrapper
     width: 80%
     margin: 0 auto
+
+.sprites-wrapper
+    display: flex
+
+    .image-container
+        width: 80%
+
+        img
+            width: 100%
+
+    .sprite-controls
+        display: flex
+        flex-direction: column
+        justify-content: center
+        align-items: center
 
 .measurements-container
     display: flex
