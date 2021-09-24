@@ -3,53 +3,39 @@
         <section class="heading">
             <h1>Pokedex</h1>
         </section>
-        <section class="pokemon-list">
-            <pokemon-card name="Bulbasaur"></pokemon-card>
+
+        <div v-if="loading">Loading...</div>
+
+        <section v-else class="pokemon-list">
+            <pokemon-card v-for="pokemon in pokemons.results" :key="pokemon.name" :url="pokemon.url"></pokemon-card>
         </section>
     </div>
 </template>
 
-<script setup>
-import PokemonCard from '/src/components/PokemonCard.vue'
-import { defineComponent } from 'vue';
-import { useStore } from 'vuex';
+<script>
+import PokemonCard from "/src/components/PokemonCard.vue"
+import { fetchCache } from "/src/modules/cacheData"
 
-const components = defineComponent({
-    'pokemon-card': PokemonCard
-});
+export default {
+    components: {
+        'pokemon-card': PokemonCard
+    },
+    data() {
+        return {
+            loading: true,
+            pokemons: null
+        }
+    },
+    created() {
+        fetchCache('https://pokeapi.co/api/v2/pokemon')
+        .then(data => {
+            this.pokemons = data
+            this.loading = false
 
-// Set Count
-await useStore().dispatch('getPokemonCount');
-console.log("Hello");
-
-// const allPokemonPromise = generatePokemonPromises();
-
-// const allPokemonData = await Promise.all(allPokemonPromise);
-
-// console.log(allPokemonPromise);
-
-/*
-
-function generatePokemonPromises(pokemonPerPage, previousPage) {
-
-    const _promises = [];
-
-    for (let i = 1; i < pokemonPerPage + 1; i++) {
-        const currentPokemon = previousPage * pokemonPerPage + i;
-        const currentFetch = async () => {
-            const pokemonResponse = await fetch(`https://pokeapi.co/pokemon/${currentPokemon}`);
-            const pokemonData = await pokemonResponse.json();
-            return pokemonData;
-        };
-        _promises.push(currentFetch);
+            console.log(this.pokemons.results[0])
+        })
     }
-
-    return _promises;
-
 }
-
-*/
-
 </script>
 
 <style lang="sass" scoped>
@@ -66,5 +52,7 @@ function generatePokemonPromises(pokemonPerPage, previousPage) {
 
     .pokemon-list
         display: flex
+        flex-wrap: wrap
+        justify-content: center
 
 </style>

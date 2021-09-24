@@ -11,7 +11,7 @@ export default [
     },
     {
         name: 'Pokemon',
-        path: '/pokemon/:pokemonName',
+        path: '/pokemon/:pokemonId',
         component: () => import('/src/pages/pokemon.vue'),
     }
 ]
