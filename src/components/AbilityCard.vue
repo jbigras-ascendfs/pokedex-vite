@@ -3,7 +3,7 @@
 
     <div v-else class="ability-wrapper">
         <h3>{{ name }}</h3>
-        <p>{{ abilityDescription.effect_entries[1].effect }}</p>
+        <p>{{ abilityDescription }}</p>
     </div>
 </template>
 
@@ -13,7 +13,8 @@ import { fetchCache } from '/src/modules/cacheData'
 export default {
     props: {
         name: String,
-        url: String
+        url: String,
+        isHidden: { type: Boolean, default: false }
     },
     data() {
         return {
@@ -24,10 +25,10 @@ export default {
     },
     created() {
         fetchCache(this.url).then(data => {
-            this.abilityDescription = data
-            this.loading = false
+            const enEffectEntries = [...data.effect_entries].find(entry => entry.language.name === 'en')
 
-            console.log(this.abilityDescription)
+            this.abilityDescription = enEffectEntries.effect
+            this.loading = false
         }).catch(error => {
             this.error = true
         })
