@@ -31,8 +31,6 @@ export default {
         .then(data => {
             this.pokemons = data
             this.loading = false
-
-            console.log(this.pokemons.results[0])
         })
     }
 }

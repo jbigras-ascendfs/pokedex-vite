@@ -43,18 +43,26 @@
             </div>
         </div>
 
-        <Abilities :abilities="pokemonDetails.abilities" />
+        <div class="abilities-container">
+            <h2>Abilities</h2>
+            <AbilityCard
+              v-for="ability in pokemonDetails.abilities"
+              :key="ability.ability.slot"
+              :name="ability.ability.name"
+              :url="ability.ability.url"
+            />
+        </div>
 
     </div>
 </template>
 
 <script>
 import { fetchCache } from '/src/modules/cacheData'
-import Abilities from '../components/Abilities.vue'
+import AbilityCard from '../components/AbilitiyCard.vue'
 
 export default {
     components: {
-        Abilities
+        AbilityCard
     },
     data() {
         return {
