@@ -13,7 +13,7 @@
             <h2>{{ pokemonDetails.name }}</h2>
         </div>
 
-        <div class="pokemon-description-container">
+        <div class="description-container">
             <p>{{ description }}</p>
         </div>
 
@@ -30,13 +30,16 @@
 
         <div class="abilities-container">
             <h2>Abilities</h2>
-            <AbilityCard
-              v-for="pokeAbility in pokemonDetails.abilities"
-              :key="pokeAbility.ability.slot"
-              :name="pokeAbility.ability.name"
-              :url="pokeAbility.ability.url"
-              :isHidden="pokeAbility.is_hidden"
-            />
+
+            <div class="abilities-flex-container">
+                <AbilityCard
+                    v-for="pokeAbility in pokeAbilities"
+                    :key="pokeAbility.ability.slot"
+                    :name="pokeAbility.ability.name"
+                    :url="pokeAbility.ability.url"
+                    :isHidden="pokeAbility.is_hidden"
+                />
+            </div>
         </div>
 
     </div>
@@ -44,7 +47,7 @@
 
 <script>
 import { fetchCache } from '/src/modules/cacheData'
-import SpritesSection from '../components/SpritesSections.vue'
+import SpritesSection from '../components/SpritesSection.vue'
 import AbilityCard from '../components/AbilityCard.vue'
 import anime from 'animejs/lib/anime.es.js';
 
@@ -60,7 +63,8 @@ export default {
             pokemonDetails: null,
             description: null,
             weight: 0,
-            height: 0
+            height: 0,
+            evolutionChain: null
         }
     },
     created() {
@@ -71,7 +75,7 @@ export default {
 
             this.animateDimensions(this.pokemonDetails)
 
-            console.log(this.pokemonDetails.abilities)
+            console.log(this.pokemonDetails)
         }).catch(error => {
             this.error = true
         })
@@ -80,10 +84,20 @@ export default {
         }).catch(error => {
             console.log(error)
         })
+        fetchCache(`https://pokeapi.co/api/v2/evolution-chain/1/`).then(data => {
+            this.evolutionChain = data
+
+            console.log(this.evolutionChain, 'evo chain')
+        }).catch(error => {
+            console.log(error)
+        })
     },
     computed: {
         pokeTypes() {
             return this.pokemonDetails?.types ?? []
+        },
+        pokeAbilities() {
+            return this.pokemonDetails?.abilities.slice(0, 2) ?? []
         }
     },
     methods: {
@@ -112,18 +126,40 @@ export default {
 <style lang="sass" scoped>
 
 .pokemon-info-wrapper
-    width: 80%
+    width: 85%
     margin: 0 auto
 
 .type-container
     display: flex
+    margin-bottom: 12px
 
     .type
+        border-radius: 5px
         text-transform: uppercase
+        font-size: 0.75rem 
+        padding: 5px 12px
+
+        &:first-of-type
+            margin-right: 5px
+
+.name-container
+    margin-bottom: 12px
+
+    h2
+        text-transform: uppercase
+        font-size: 1.4rem
+        font-weight: 900
+
+.description-container
+    margin-bottom: 12px
+
+    p 
+        font-size: 0.9rem
 
 .measurements-container
     display: flex
     justify-content: space-between
+    margin-bottom: 20px
 
     .measurement
         width: calc(50% - 10px)
@@ -133,10 +169,19 @@ export default {
         border-bottom: 1px solid #000
         padding: 3px 0
         font-weight: bold
+        font-size: 0.85rem
 
         &:first-of-type
             margin-right: 20px
 
+.abilities-container
+    h2
+        text-transform: uppercase
+        font-size: 1rem
+        font-weight: 900
+        margin-bottom: 12px
 
+    .abilities-flex-container
+        display: flex
 
 </style>
