@@ -11,8 +11,8 @@
         </section>
 
         <div class="button-container">
-            <button>prev</button>
-            <!-- <button @click="nextPokemonPage">next</button> -->
+            <button @click="prevPokemonPage">prev</button>
+            <button @click="nextPokemonPage">next</button>
         </div>
 
         <div>Icons made by <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
@@ -34,22 +34,28 @@ export default {
             pokemons: null
         }
     },
-    // methods: {
-    //     previousPokemonPage() {
+    methods: {
+        previousPokemonPage() {
+            this.loading = true
 
-    //     },
-    //     nextPokemonPage() {
-    //         this.loading = true
-    //         // clearAllFetchCacheData()
+            fetchCache(this.pokemons.previous)
+            .then(data => {
+                console.log(data, 'data PREV')
+                this.pokemons = data
+                this.loading = false
+            })
+        },
+        nextPokemonPage() {
+            this.loading = true
 
-    //         fetchCache(this.pokemons.next)
-    //         .then(data => {
-    //             console.log(data, 'data NEXT')
-    //             this.pokemons = data
-    //             this.loading = false
-    //         })
-    //     },
-    // },
+            fetchCache(this.pokemons.next)
+            .then(data => {
+                console.log(data, 'data NEXT')
+                this.pokemons = data
+                this.loading = false
+            })
+        },
+    },
     created() {
         fetchCache('https://pokeapi.co/api/v2/pokemon')
         .then(data => {

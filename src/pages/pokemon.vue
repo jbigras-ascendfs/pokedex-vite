@@ -1,51 +1,64 @@
 <template>
     <div v-if="error">Error</div>
     <div v-else-if="loading">Loading</div>
-    <div v-else class="pokemon-info-wrapper">
+    <div v-else :class="pokeTypes[0].type.name" class="pokemon-info-wrapper type">
 
-        <SpritesSection :pokemonDetails="pokemonDetails" />
+        <div class="pokemon-content">
+            <SpritesSection :pokemonDetails="pokemonDetails" />
 
-        <div class="type-container">
-            <div :class="type.type.name" class="type" v-for="(type, i) in pokeTypes" :key="i">{{ type.type.name }}</div>
-        </div>
-
-        <div class="number-container">
-            <span>#{{ paddedPokeId }}</span>
-        </div>
-
-        <div class="name-container">
-            <h2>{{ pokemonDetails.name }}</h2>
-        </div>
-
-        <div class="description-container">
-            <p>{{ description }}</p>
-        </div>
-
-        <div class="measurements-container">
-            <div class="measurement weight">
-                <span>Weight</span>
-                <span>{{ weight }} kg</span>
+            <div class="type-container">
+                <div :class="type.type.name" class="type" v-for="(type, i) in pokeTypes" :key="i">{{ type.type.name }}</div>
             </div>
-            <div class="measurement height">
-                <span>Height</span>
-                <span>{{ height }} m</span>
+
+            <div class="number-container">
+                <span>#{{ paddedPokeId }}</span>
+            </div>
+
+            <div class="name-container">
+                <h2>{{ pokemonDetails.name }}</h2>
+            </div>
+
+            <div class="description-container">
+                <p>{{ description }}</p>
+            </div>
+
+            <div class="measurements-container">
+                <div class="measurement weight">
+                    <span>Weight</span>
+                    <span>{{ weight }} kg</span>
+                </div>
+                <div class="measurement height">
+                    <span>Height</span>
+                    <span>{{ height }} m</span>
+                </div>
+            </div>
+
+            <div class="abilities-container">
+                <h2>Abilities</h2>
+
+                <div class="abilities-flex-container">
+                    <AbilityCard
+                        v-for="pokeAbility in pokeAbilities"
+                        :key="pokeAbility.ability.slot"
+                        :name="pokeAbility.ability.name"
+                        :url="pokeAbility.ability.url"
+                        :isHidden="pokeAbility.is_hidden"
+                    />
+                </div>
+            </div>
+
+            <div class="evolution-container">
+                <img v-for="(sprite, i) in evolutionSprites" :key="i" :src="sprite">
+            </div>
+
+            <div class="nav-buttons-placeholder">
+            </div>
+
+            <div class="nav-buttons">
+                <button @click="handlePreviousClick" class="previous">Previous</button>
+                <button @click="handleNextClick" class="next">Next</button>
             </div>
         </div>
-
-        <div class="abilities-container">
-            <h2>Abilities</h2>
-
-            <div class="abilities-flex-container">
-                <AbilityCard
-                    v-for="pokeAbility in pokeAbilities"
-                    :key="pokeAbility.ability.slot"
-                    :name="pokeAbility.ability.name"
-                    :url="pokeAbility.ability.url"
-                    :isHidden="pokeAbility.is_hidden"
-                />
-            </div>
-        </div>
-
     </div>
 </template>
 
@@ -68,33 +81,81 @@ export default {
             description: null,
             weight: 0,
             height: 0,
-            evolutionChain: null
+            evolutionChainUrl: null,
+            evolutionChain: null,
+            evolutionSprites: []
         }
     },
     created() {
-        const { pokemonId } = this.$route.params
-        fetchCache(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/`).then(data => {
-            this.pokemonDetails = data
-            this.loading = false
+        this.$watch(
+            () => this.evolutionChainUrl,
+            (newUrl, _) => {
+                fetchCache(newUrl).then(data => {
+                    this.evolutionChain = data
 
-            this.animateDimensions(this.pokemonDetails)
+                    this.evolutionSprites = []
+                    let initValue = data.chain
+                    let allPokeInChain = []
 
-            console.log(this.pokemonDetails, 'DEETS')
-        }).catch(error => {
-            this.error = true
-        })
-        fetchCache(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`).then(data => {
-            this.description = data.flavor_text_entries[0].flavor_text
-        }).catch(error => {
-            console.log(error)
-        })
-        fetchCache(`https://pokeapi.co/api/v2/evolution-chain/2/`).then(data => {
-            this.evolutionChain = data
+                    let findEvolvesTo = (currentEvolvesTo) => {
+                        allPokeInChain.push(currentEvolvesTo.species)
 
-            console.log(this.evolutionChain, 'EVO CHAIN')
-        }).catch(error => {
-            console.log(error)
-        })
+                        if (currentEvolvesTo.evolves_to.length > 0) {
+                            findEvolvesTo(currentEvolvesTo.evolves_to[0])
+                        }
+                    }
+
+                    findEvolvesTo(initValue)
+
+                    console.log(allPokeInChain, 'evo chain')
+
+                    allPokeInChain.map(pokemon => {
+                        const splitUrl = pokemon.url.split('/')
+                        const id = splitUrl[splitUrl.length - 2]
+
+                        fetchCache(`https://pokeapi.co/api/v2/pokemon/${id}/`).then(data => {
+                            this.evolutionSprites.push(data.sprites.front_default)
+
+                            console.log(this.evolutionSprites, 'SPRITES')
+                        })
+                    })  
+
+                }).catch(error => {
+                    console.log(error)
+                })
+            }
+        )
+
+        this.$watch(
+            () => this.$route.params.pokemonId,
+            (pokemonId, _) => {
+                // react to route changes...
+
+                fetchCache(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/`).then(data => {
+                    this.pokemonDetails = data
+                    this.loading = false
+
+                    this.animateDimensions(this.pokemonDetails)
+
+                    console.log(this.pokemonDetails, 'DEETS')
+                }).catch(error => {
+                    this.error = true
+                })
+                fetchCache(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`).then(data => {
+                    this.description = data.flavor_text_entries[0].flavor_text
+                    this.evolutionChainUrl = data.evolution_chain.url
+                    console.log(this.evolutionChainUrl, 'url')
+                    console.log(data, 'SPECIES')
+
+
+                }).catch(error => {
+                    console.log(error)
+                })
+            },
+            {
+                immediate: true
+            }
+        )   
     },
     computed: {
         pokeTypes() {
@@ -125,6 +186,16 @@ export default {
                     this.height = dimensions.height
                 }
             })
+        },
+        handleNextClick() {
+            const { pokemonId } = this.$route.params
+            const nextId = parseInt(pokemonId) + 1
+            this.$router.push({ path: `/pokemon/${nextId}` })
+        },
+        handlePreviousClick() {
+            const { pokemonId } = this.$route.params
+            const previousId = parseInt(pokemonId) - 1
+            this.$router.push({ path: `/pokemon/${previousId}` })
         }
     }
 }
@@ -133,20 +204,25 @@ export default {
 <style lang="sass" scoped>
 
 .pokemon-info-wrapper
-    width: 85%
-    margin: 0 auto
+    width: 100%
+    padding: 0 1rem 
+    // margin: 0 auto
     position: relative
 
-    // &:before
-    //     content: ''
-    //     display: block
-    //     position: absolute
-    //     background-color: orange
-    //     height: 300px
-    //     width: 200%
-    //     z-index: -1
-    //     left: -20%
-    //     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)
+    &:before
+        width: 100%
+        height: calc(100% - 100px)
+        position: absolute
+        bottom: 0
+        left: 0
+        z-index: 0
+        border-top-right-radius: 10000rem
+        content: ''
+        background-color: #fff
+
+    .pokemon-content
+        position: relative
+        z-index: 1
 
 .type-container
     display: flex
@@ -211,5 +287,44 @@ export default {
 
     .abilities-flex-container
         display: flex
+
+.evolution-container
+    width: 100%
+    display: flex
+    justify-content: center
+    align-items: center
+
+    img
+        height: 5rem
+        max-width: 100%
+        display: block
+        object-fit: contain
+        object-position: center
+
+.nav-buttons-placeholder
+    height: 50px
+    width: 100%
+
+.nav-buttons
+    position: fixed
+    bottom: 0
+    width: calc(100% - var(--leftbar-width))
+    right: 0
+    height: 50px
+    display: flex
+    justify-content: center
+    align-items: center
+    background-image: radial-gradient( rgba(255,255,255,0) 1px, white 1px )
+    background-size: 4px 4px
+    backdrop-filter: brightness(100%) blur(3px)
+
+    button
+        background-color: #000
+        border: none
+        border-radius: 0.2rem
+        color: #fff
+        padding: 0.5rem 1rem
+        margin: 0.5rem 
+        min-width: 40%
 
 </style>

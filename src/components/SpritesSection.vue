@@ -105,9 +105,11 @@ export default {
         align-items: center
 
         button
+            background-color: #fff
             height: 35px
             width: 35px
             border-radius: 50%
+            border: none
             padding: 8px
 
             &:first-of-type

@@ -101,8 +101,8 @@ const setAndReturnNewCache = async (cacheTarget : cacheTargetOptions , api : str
     try {
         const response = await fetch(api);
         const data = await response.json();
-        setCache(data);
-        registerNewCacheKey(cacheTarget, api);
+        // setCache(data);
+        // registerNewCacheKey(cacheTarget, api);
         return data;
     } catch (err) {
         console.error(err);
