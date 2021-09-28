@@ -9,12 +9,20 @@
         <section v-else class="pokemon-list">
             <pokemon-card v-for="pokemon in pokemons.results" :key="pokemon.name" :url="pokemon.url"></pokemon-card>
         </section>
+
+        <div class="button-container">
+            <button>prev</button>
+            <!-- <button @click="nextPokemonPage">next</button> -->
+        </div>
+
+        <div>Icons made by <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+        <div>Icons made by <a href="https://www.flaticon.com/authors/becris" title="Becris">Becris</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
     </div>
 </template>
 
 <script>
 import PokemonCard from "/src/components/PokemonCard.vue"
-import { fetchCache } from "/src/modules/cacheData"
+import { fetchCache, clearAllFetchCacheData } from "/src/modules/cacheData"
 
 export default {
     components: {
@@ -26,6 +34,22 @@ export default {
             pokemons: null
         }
     },
+    // methods: {
+    //     previousPokemonPage() {
+
+    //     },
+    //     nextPokemonPage() {
+    //         this.loading = true
+    //         // clearAllFetchCacheData()
+
+    //         fetchCache(this.pokemons.next)
+    //         .then(data => {
+    //             console.log(data, 'data NEXT')
+    //             this.pokemons = data
+    //             this.loading = false
+    //         })
+    //     },
+    // },
     created() {
         fetchCache('https://pokeapi.co/api/v2/pokemon')
         .then(data => {

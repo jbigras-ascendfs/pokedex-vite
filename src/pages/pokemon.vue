@@ -9,6 +9,10 @@
             <div :class="type.type.name" class="type" v-for="(type, i) in pokeTypes" :key="i">{{ type.type.name }}</div>
         </div>
 
+        <div class="number-container">
+            <span>#{{ paddedPokeId }}</span>
+        </div>
+
         <div class="name-container">
             <h2>{{ pokemonDetails.name }}</h2>
         </div>
@@ -75,7 +79,7 @@ export default {
 
             this.animateDimensions(this.pokemonDetails)
 
-            console.log(this.pokemonDetails)
+            console.log(this.pokemonDetails, 'DEETS')
         }).catch(error => {
             this.error = true
         })
@@ -84,10 +88,10 @@ export default {
         }).catch(error => {
             console.log(error)
         })
-        fetchCache(`https://pokeapi.co/api/v2/evolution-chain/1/`).then(data => {
+        fetchCache(`https://pokeapi.co/api/v2/evolution-chain/2/`).then(data => {
             this.evolutionChain = data
 
-            console.log(this.evolutionChain, 'evo chain')
+            console.log(this.evolutionChain, 'EVO CHAIN')
         }).catch(error => {
             console.log(error)
         })
@@ -95,6 +99,9 @@ export default {
     computed: {
         pokeTypes() {
             return this.pokemonDetails?.types ?? []
+        },
+        paddedPokeId() {
+            return this.pokemonDetails.id.toString().padStart(3, '0')
         },
         pokeAbilities() {
             return this.pokemonDetails?.abilities.slice(0, 2) ?? []
@@ -128,6 +135,18 @@ export default {
 .pokemon-info-wrapper
     width: 85%
     margin: 0 auto
+    position: relative
+
+    // &:before
+    //     content: ''
+    //     display: block
+    //     position: absolute
+    //     background-color: orange
+    //     height: 300px
+    //     width: 200%
+    //     z-index: -1
+    //     left: -20%
+    //     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)
 
 .type-container
     display: flex
@@ -141,6 +160,15 @@ export default {
 
         &:first-of-type
             margin-right: 5px
+
+.number-container
+
+    span
+        background-color: #000
+        border-radius: 5px
+        color: #fff
+        font-size: 0.6rem
+        padding: 3px 8px
 
 .name-container
     margin-bottom: 12px

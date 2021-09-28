@@ -41,5 +41,6 @@ export default {
     width: calc(100% - var(--leftbar-width))
     height: 100%
     overflow-y: scroll
+    overflow-x: hidden
 
 </style>

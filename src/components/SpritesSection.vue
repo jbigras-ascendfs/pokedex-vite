@@ -24,8 +24,12 @@
         </transition>
 
         <div class="sprite-controls">
-            <button @click="toggleSpriteDirection">Turn</button>
-            <button @click="toggleShinySprite">Shiny</button>
+            <button @click="toggleSpriteDirection">
+                <img src="/src/assets/rotate.png" alt="rotate">
+            </button>
+            <button @click="toggleShinySprite">
+                <img src="/src/assets/sparkle.png" alt="shiny">
+            </button>
         </div>
     </div>
 </template>
@@ -99,5 +103,18 @@ export default {
         flex-direction: column
         justify-content: center
         align-items: center
+
+        button
+            height: 35px
+            width: 35px
+            border-radius: 50%
+            padding: 8px
+
+            &:first-of-type
+                margin-bottom: 8px
+
+            img
+                max-width: 100%
+
 
 </style>
