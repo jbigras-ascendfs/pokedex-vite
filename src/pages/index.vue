@@ -63,7 +63,6 @@ export default {
     created() {
         fetchCache('https://pokeapi.co/api/v2/pokemon')
         .then(data => {
-            console.log(data, 'data')
             this.pokemons = data
             this.loading = false
         })

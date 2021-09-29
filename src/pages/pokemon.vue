@@ -111,16 +111,14 @@ export default {
 
                     console.log(allPokeInChain, 'evo chain')
 
-                    allPokeInChain.map(pokemon => {
+                    allPokeInChain.map((pokemon) => {
                         const splitUrl = pokemon.url.split('/')
                         const id = splitUrl[splitUrl.length - 2]
 
                         fetchCache(`https://pokeapi.co/api/v2/pokemon/${id}/`).then(data => {
                             this.evolutionSprites.push(data.sprites.front_default)
-
-                            console.log(this.evolutionSprites, 'SPRITES')
                         })
-                    })  
+                    })
 
                 }).catch(error => {
                     console.log(error)
@@ -145,10 +143,7 @@ export default {
                     const enFlavorTextEntry = [...data.flavor_text_entries].find(entry => entry.language.name === 'en')
                     
                     this.description = enFlavorTextEntry.flavor_text
-
                     this.evolutionChainUrl = data.evolution_chain.url
-                    console.log(this.evolutionChainUrl, 'url')
-                    console.log(data, 'SPECIES')
 
                 }).catch(error => {
                     console.log(error)
