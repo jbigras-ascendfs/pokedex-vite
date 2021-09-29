@@ -139,7 +139,10 @@ export default {
                     this.error = true
                 })
                 fetchCache(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`).then(data => {
-                    this.description = data.flavor_text_entries[0].flavor_text
+                    const enFlavorTextEntries = [...data.flavor_text_entries].find(entry => entry.language.name === 'en')
+                    
+                    this.description = enFlavorTextEntries.flavor_text
+
                     this.evolutionChainUrl = data.evolution_chain.url
                     console.log(this.evolutionChainUrl, 'url')
                     console.log(data, 'SPECIES')
