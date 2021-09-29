@@ -11,7 +11,7 @@
         </section>
 
         <div class="button-container">
-            <button @click="prevPokemonPage">prev</button>
+            <button @click="previousPokemonPage">prev</button>
             <button @click="nextPokemonPage">next</button>
         </div>
 
@@ -22,7 +22,7 @@
 
 <script>
 import PokemonCard from "/src/components/PokemonCard.vue"
-import { fetchCache, clearAllFetchCacheData } from "/src/modules/cacheData"
+import { fetchCache } from "/src/modules/cacheData"
 
 export default {
     components: {
@@ -40,7 +40,6 @@ export default {
 
             fetchCache(this.pokemons.previous)
             .then(data => {
-                console.log(data, 'data PREV')
                 this.pokemons = data
                 this.loading = false
             })
@@ -50,7 +49,6 @@ export default {
 
             fetchCache(this.pokemons.next)
             .then(data => {
-                console.log(data, 'data NEXT')
                 this.pokemons = data
                 this.loading = false
             })

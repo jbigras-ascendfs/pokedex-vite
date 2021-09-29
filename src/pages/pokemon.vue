@@ -1,13 +1,13 @@
 <template>
     <div v-if="error">Error</div>
     <div v-else-if="loading">Loading</div>
-    <div v-else :class="pokeTypes[0].type.name" class="pokemon-info-wrapper type">
+    <div v-else :class="pokeTypes[0].type.name" class="pokemon-info-wrapper bg-color">
 
         <div class="pokemon-content">
             <SpritesSection :pokemonDetails="pokemonDetails" />
 
             <div class="type-container">
-                <div :class="type.type.name" class="type" v-for="(type, i) in pokeTypes" :key="i">{{ type.type.name }}</div>
+                <div :class="type.type.name" class="bg-color type" v-for="(type, i) in pokeTypes" :key="i">{{ type.type.name }}</div>
             </div>
 
             <div class="number-container">
@@ -49,9 +49,6 @@
 
             <div class="evolution-container">
                 <img v-for="(sprite, i) in evolutionSprites" :key="i" :src="sprite">
-            </div>
-
-            <div class="nav-buttons-placeholder">
             </div>
 
             <div class="nav-buttons">
@@ -147,7 +144,6 @@ export default {
                     console.log(this.evolutionChainUrl, 'url')
                     console.log(data, 'SPECIES')
 
-
                 }).catch(error => {
                     console.log(error)
                 })
@@ -206,7 +202,6 @@ export default {
 .pokemon-info-wrapper
     width: 100%
     padding: 0 1rem 
-    // margin: 0 auto
     position: relative
 
     &:before
@@ -223,6 +218,7 @@ export default {
     .pokemon-content
         position: relative
         z-index: 1
+        padding-bottom: 50px
 
 .type-container
     display: flex
@@ -300,10 +296,6 @@ export default {
         display: block
         object-fit: contain
         object-position: center
-
-.nav-buttons-placeholder
-    height: 50px
-    width: 100%
 
 .nav-buttons
     position: fixed
