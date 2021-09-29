@@ -7,14 +7,14 @@
         <div v-if="loading">Loading...</div>
 
         <section v-else class="pokemon-list">
-            <pokemon-card v-for="pokemon in pokemons.results" :key="pokemon.name" :url="pokemon.url"></pokemon-card>
+            <PokemonCard v-for="pokemon in pokemons.results" :key="pokemon.name" :url="pokemon.url"/>
         </section>
 
-        <div class="button-container">
-            <button @click="previousPokemonPage">prev</button>
-            <button @click="nextPokemonPage">next</button>
-        </div>
-        
+        <NavButtons
+            @handlePreviousClick="previousPokemonPage"
+            @handleNextClick="nextPokemonPage"
+        />
+
         <!-- sparkle -->
         <div>Icons made by <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
         <!-- rotate -->
@@ -26,11 +26,13 @@
 
 <script>
 import PokemonCard from "/src/components/PokemonCard.vue"
+import NavButtons from "/src/components/NavButtons.vue"
 import { fetchCache } from "/src/modules/cacheData"
 
 export default {
     components: {
-        'pokemon-card': PokemonCard
+        PokemonCard,
+        NavButtons
     },
     data() {
         return {
@@ -78,7 +80,7 @@ export default {
     display: flex
     flex-direction: column
 
-    & > * 
+    & > *:not(.nav-buttons)
         width: 100%
 
     .pokemon-list
