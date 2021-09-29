@@ -24,10 +24,10 @@
         </transition>
 
         <div class="sprite-controls">
-            <button @click="toggleSpriteDirection">
+            <button @click="toggleSpriteDirection" :class="{ active: showBack }">
                 <img src="/src/assets/rotate.png" alt="rotate">
             </button>
-            <button @click="toggleShinySprite">
+            <button @click="toggleShinySprite" :class="{ active: showShiny }">
                 <img src="/src/assets/sparkle.png" alt="shiny">
             </button>
         </div>
@@ -111,6 +111,9 @@ export default {
             border-radius: 50%
             border: none
             padding: 8px
+
+            &.active
+                border: 1px solid #000
 
             &:first-of-type
                 margin-bottom: 8px

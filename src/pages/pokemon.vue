@@ -89,20 +89,22 @@ export default {
             (newUrl, _) => {
                 fetchCache(newUrl).then(data => {
                     this.evolutionChain = data
-
                     this.evolutionSprites = []
-                    let initValue = data.chain
+
+                    let initialValue = data.chain
                     let allPokeInChain = []
 
                     let findEvolvesTo = (currentEvolvesTo) => {
                         allPokeInChain.push(currentEvolvesTo.species)
 
                         if (currentEvolvesTo.evolves_to.length > 0) {
-                            findEvolvesTo(currentEvolvesTo.evolves_to[0])
+                            currentEvolvesTo.evolves_to.forEach((_, i) => {
+                                findEvolvesTo(currentEvolvesTo.evolves_to[i])
+                            })
                         }
                     }
 
-                    findEvolvesTo(initValue)
+                    findEvolvesTo(initialValue)
 
                     console.log(allPokeInChain, 'evo chain')
 
@@ -133,15 +135,13 @@ export default {
                     this.loading = false
 
                     this.animateDimensions(this.pokemonDetails)
-
-                    console.log(this.pokemonDetails, 'DEETS')
                 }).catch(error => {
                     this.error = true
                 })
                 fetchCache(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`).then(data => {
-                    const enFlavorTextEntries = [...data.flavor_text_entries].find(entry => entry.language.name === 'en')
+                    const enFlavorTextEntry = [...data.flavor_text_entries].find(entry => entry.language.name === 'en')
                     
-                    this.description = enFlavorTextEntries.flavor_text
+                    this.description = enFlavorTextEntry.flavor_text
 
                     this.evolutionChainUrl = data.evolution_chain.url
                     console.log(this.evolutionChainUrl, 'url')
