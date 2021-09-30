@@ -48,7 +48,7 @@
             </div>
 
             <div class="evolution-container">
-                <img v-for="(sprite, i) in evolutionSprites" :key="i" :src="sprite">
+                <img v-for="(sprite, i) in orderedEvolutionSprites" :key="i" :src="sprite.url">
             </div>
 
             <NavButtons
@@ -109,14 +109,12 @@ export default {
 
                     findEvolvesTo(initialValue)
 
-                    console.log(allPokeInChain, 'evo chain')
-
-                    allPokeInChain.map((pokemon) => {
+                    allPokeInChain.map((pokemon, i) => {
                         const splitUrl = pokemon.url.split('/')
                         const id = splitUrl[splitUrl.length - 2]
 
                         fetchCache(`https://pokeapi.co/api/v2/pokemon/${id}/`).then(data => {
-                            this.evolutionSprites.push(data.sprites.front_default)
+                            this.evolutionSprites.push({ url: data.sprites.front_default, index: i })
                         })
                     })
 
@@ -163,6 +161,11 @@ export default {
         },
         pokeAbilities() {
             return this.pokemonDetails?.abilities.slice(0, 2) ?? []
+        },
+        orderedEvolutionSprites() {
+            return this.evolutionSprites.sort((a, b) => {
+                return a.index - b.index
+            })
         }
     },
     methods: {
