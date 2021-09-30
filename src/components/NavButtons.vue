@@ -32,6 +32,7 @@ export default {
     background-image: radial-gradient( rgba(255,255,255,0) 1px, white 1px )
     background-size: 4px 4px
     backdrop-filter: brightness(100%) blur(3px)
+    z-index: 9999
 
     button
         background-color: #000

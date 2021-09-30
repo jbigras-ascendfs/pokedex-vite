@@ -3,7 +3,7 @@
     <div v-else-if="loading">Loading</div>
     <div v-else :class="pokeTypes[0].type.name" class="pokemon-info-wrapper bg-color">
 
-        <div class="pokemon-content">
+        <div class="pokemon-content" ref="pokeContent">
             <SpritesSection :pokemonDetails="pokemonDetails" />
 
             <div class="type-container">
@@ -48,15 +48,15 @@
             </div>
 
             <div class="evolution-container">
-                <img v-for="(sprite, i) in orderedEvolutionSprites" :key="i" :src="sprite.url">
+                <img v-for="(sprite, i) in evolutionSprites" :key="i" :src="sprite.url">
             </div>
-
-            <NavButtons
-                @handlePreviousClick="previousPokemon"
-                @handleNextClick="nextPokemon"
-            />
-
         </div>
+
+        <NavButtons
+            @handlePreviousClick="previousPokemon"
+            @handleNextClick="nextPokemon"
+        />
+
     </div>
 </template>
 
@@ -109,7 +109,7 @@ export default {
 
                     findEvolvesTo(initialValue)
 
-                    allPokeInChain.map((pokemon, i) => {
+                    allPokeInChain.forEach((pokemon, i) => {
                         const splitUrl = pokemon.url.split('/')
                         const id = splitUrl[splitUrl.length - 2]
 
@@ -126,27 +126,51 @@ export default {
 
         this.$watch(
             () => this.$route.params.pokemonId,
-            (pokemonId, _) => {
-                // react to route changes...
+            async (pokemonId, _) => {
+                const pokeContent = this.$refs?.pokeContent
 
-                fetchCache(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/`).then(data => {
-                    this.pokemonDetails = data
-                    this.loading = false
+                if (pokeContent) {
+                    anime({
+                        targets: pokeContent.children,
+                        translateX: -50,
+                        opacity: 0,
+                        duration: 400,
+                        delay: anime.stagger(50),
+                        complete: async () => {
+                            await fetchPokemonData(this)
+                            anime({
+                                targets: pokeContent.children,
+                                translateX: 0,
+                                opacity: 1,
+                                duration: 400,
+                                delay: anime.stagger(50),
+                            })
+                        }
+                    })
+                } else {
+                    await fetchPokemonData(this)
+                }
+    
+                async function fetchPokemonData(self) {
+                    const allData = await Promise.all([
+                        fetchCache(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/`),
+                        fetchCache(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`)
+                    ])
 
-                    this.animateDimensions(this.pokemonDetails)
-                }).catch(error => {
-                    this.error = true
-                })
-                fetchCache(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`).then(data => {
-                    const enFlavorTextEntry = [...data.flavor_text_entries].find(entry => entry.language.name === 'en')
+                    const data = allData[0]
+                    self.pokemonDetails = data
+                    self.loading = false
+
+                    self.animateDimensions(self.pokemonDetails)
+
+                    const data2 = allData[1]
+                    const enFlavorTextEntry = [...data2.flavor_text_entries].find(entry => entry.language.name === 'en')
                     
-                    this.description = enFlavorTextEntry.flavor_text
-                    this.evolutionChainUrl = data.evolution_chain.url
-
-                }).catch(error => {
-                    console.log(error)
-                })
+                    self.description = enFlavorTextEntry.flavor_text
+                    self.evolutionChainUrl = data2.evolution_chain.url
+                }
             },
+
             {
                 immediate: true
             }
@@ -207,6 +231,7 @@ export default {
     width: 100%
     padding: 0 1rem 
     position: relative
+    transition: background-color 0.4s linear
 
     &:before
         width: 100%
