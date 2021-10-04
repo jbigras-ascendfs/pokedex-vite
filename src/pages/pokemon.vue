@@ -60,6 +60,30 @@
     </div>
 </template>
 
+<!-- <script setup>
+import SpritesSection from '../components/SpritesSection.vue'
+import AbilityCard from '../components/AbilityCard.vue'
+import NavButtons from '../components/NavButtons.vue'
+import anime from 'animejs/lib/anime.es.js';
+import { useQuery } from 'vue-query';
+import { useRoute } from 'vue-router';
+
+const pokemonId = useRoute().params.pokemonId
+
+const pokemon = useQuery(reactive(['pokemon', {pokemonId}]), async () => {
+    const response = await fetch(props.url)
+    const data = await response.json()
+    return data
+})
+
+const pokemonSpecies = useQuery(['pokemonSpecies', pokemonId], async () => {
+    const response = await fetch(props.url)
+    const data = await response.json()
+    return data
+})
+
+</script> -->
+
 <script>
 import { fetchCache } from '/src/modules/cacheData'
 import SpritesSection from '../components/SpritesSection.vue'

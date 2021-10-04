@@ -3,12 +3,16 @@
 </template>
 
 <script>
+import { useQueryProvider } from 'vue-query'
 import DefaultLayout from '/src/layouts/DefaultLayout.vue'
 
 export default {
+    setup() {
+        useQueryProvider()
+    },
     components: {
         'default-layout': DefaultLayout
-    },
+    }
 }
 </script>
 

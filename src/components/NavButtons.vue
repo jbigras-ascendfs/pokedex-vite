@@ -1,12 +1,19 @@
 <template>
     <div class="nav-buttons">
-        <button @click="handlePreviousClick" class="previous">Previous</button>
-        <button @click="handleNextClick" class="next">Next</button>
+        <button v-if="previousIsVisible" @click="handlePreviousClick" class="previous">Previous</button>
+        <button v-if="nextIsVisible" @click="handleNextClick" class="next">Next</button>
     </div>
 </template>
 
 <script>
+/** 
+ * this is my component
+ */
 export default {
+    props: {
+        nextIsVisible: { type: Boolean, default: true },
+        previousIsVisible: { type: Boolean, default: true }
+    },
     methods: {
         handlePreviousClick() {
             this.$emit('handlePreviousClick')

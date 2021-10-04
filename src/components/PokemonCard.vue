@@ -1,7 +1,7 @@
 <template>
     <div class="pokemon-card">
-        <div v-if="error" class="error-container">Error</div>
-        <div v-else-if="loading" class="loading-container">Loading</div>
+        <div v-if="isError" class="error-container">Error</div>
+        <div v-else-if="isLoading" class="loading-container">Loading</div>
         <router-link :to="`/pokemon/${pokemonInfo.id}`" v-else >
             <div class="content-container">
                 <div class="image-container">
@@ -15,32 +15,21 @@
     </div>
 </template>
 
-<script>
-import { fetchCache } from '/src/modules/cacheData'
+<script setup>
+import { useQuery } from 'vue-query'
 
-export default {
-    props: {
-        url: String
-    },
-    data() {
-        return {
-            loading: true,
-            pokemonInfo: null,
-            error: false
-        }
-    },
-    created() {
-        if (!this.url) {
-            this.error = true
-        }
-        fetchCache(this.url).then(data => {
-            this.pokemonInfo = data
-            this.loading = false
-        }).catch(error => {
-            this.error = true
-        })
-    }
-}
+const props = defineProps({
+    url: String
+})
+
+const splitUrl = props.url.split('/')
+const pokemonId = splitUrl[splitUrl.length - 2]
+
+const { data: pokemonInfo, isLoading, isError } = useQuery(['pokemon', pokemonId], async () => {
+    const response = await fetch(props.url)
+    const data = await response.json()
+    return data
+})
 
 </script>
 
